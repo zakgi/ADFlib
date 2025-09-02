@@ -306,8 +306,8 @@ void print_device(struct AdfDevice *dev)
 {
     printf("Device : %s. Cylinders = %d, Heads = %d, Sectors = %d. Volumes = %d\n",
         dev->type != ADF_DEVTYPE_UNKNOWN    ? adfDevTypeGetDescription( dev->type ) :
-        dev->class == ADF_DEVCLASS_HARDDISK ? "Harddisk"  :
-        dev->class == ADF_DEVCLASS_HARDFILE ? "Hardfile"  : "???",
+        dev->dev_class == ADF_DEVCLASS_HARDDISK ? "Harddisk"  :
+        dev->dev_class == ADF_DEVCLASS_HARDFILE ? "Hardfile"  : "???",
         dev->geometry.cylinders, dev->geometry.heads, dev->geometry.sectors, dev->nVol);
 }
 
@@ -316,7 +316,7 @@ void print_volume(struct AdfVolume *vol)
 {
     ADF_SECTNUM num_blocks = vol->lastBlock - vol->firstBlock + 1;
 
-    switch (vol->dev->class) {
+    switch (vol->dev->dev_class) {
     case ADF_DEVCLASS_FLOP:
         printf("Volume : %s,", adfDevTypeGetDescription( vol->dev->type ) );
         break;

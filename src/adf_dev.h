@@ -53,7 +53,7 @@ typedef enum {
 struct AdfDevice {
     char *         name;
     AdfDevType     type;
-    AdfDevClass    class;            // flop / hdf / hdd (with RDB)
+    AdfDevClass    dev_class;            // flop / hdf / hdd (with RDB)
     bool           readOnly;
     uint32_t       sizeBlocks;
 

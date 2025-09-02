@@ -56,7 +56,7 @@ ADF_RETCODE adfCreateHd( struct AdfDevice * const                   dev,
         return ADF_RC_ERROR;
     }
 
-    dev->class = ADF_DEVCLASS_HARDDISK;
+    dev->dev_class = ADF_DEVCLASS_HARDDISK;
 
     dev->volList = (struct AdfVolume **) malloc(
         sizeof(struct AdfVolume *) * n );

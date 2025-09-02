@@ -58,7 +58,7 @@ static struct AdfDevice * ramdiskCreate( const char * const  name,
 
     //dev->devType   = adfDevType( dev );
     dev->type  = adfDevGetTypeByGeometry( &dev->geometry );
-    dev->class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
+    dev->dev_class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
         adfDevTypeGetClass( dev->type ) :
         adfDevGetClassBySizeBlocks( dev->sizeBlocks );
 

@@ -60,7 +60,7 @@ ADF_RETCODE adfCreateHdFile( struct AdfDevice * const  dev,
     }
 
     dev->nVol    = 1;
-    dev->class   = ADF_DEVCLASS_HARDFILE;
+    dev->dev_class   = ADF_DEVCLASS_HARDFILE;
     dev->mounted = true;
 
     return ADF_RC_OK;

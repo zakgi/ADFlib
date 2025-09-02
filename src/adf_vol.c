@@ -353,7 +353,7 @@ ADF_RETCODE adfVolInstallBootBlock( struct AdfVolume * const  vol,
     int i;
     struct AdfBootBlock boot;
 
-    if ( vol->dev->class != ADF_DEVCLASS_FLOP )
+    if ( vol->dev->dev_class != ADF_DEVCLASS_FLOP )
         //&& vol->dev->ype != ADF_DEVTYPE_HDF )   also HDF????
     {
         return ADF_RC_ERROR;
@@ -515,9 +515,9 @@ char * adfVolGetInfo( struct AdfVolume * const  vol )
         "  Last access:\t%d/%02d/%02d %d:%02d:%02d"
         "\n\t\t%d/%02d/%02d %d:%02d:%02d\n",
         vol->volName, // diskName ?
-        vol->dev->class == ADF_DEVCLASS_FLOP     ? "Floppy disk" :
-        vol->dev->class == ADF_DEVCLASS_HARDDISK ? "Hard disk partition" :
-        vol->dev->class == ADF_DEVCLASS_HARDFILE ? "HardFile" :
+        vol->dev->dev_class == ADF_DEVCLASS_FLOP     ? "Floppy disk" :
+        vol->dev->dev_class == ADF_DEVCLASS_HARDDISK ? "Hard disk partition" :
+        vol->dev->dev_class == ADF_DEVCLASS_HARDFILE ? "HardFile" :
         "Unknown!",
         adfVolIsFFS( vol ) ? "FFS" : "OFS",
         adfVolHasINTL( vol ) ? "INTL " : "",
@@ -559,9 +559,9 @@ char * adfVolGetInfo( struct AdfVolume * const  vol )
         "  Last access:\t%d/%02d/%02d %d:%02d:%02d"
         "\n\t\t%d/%02d/%02d %d:%02d:%02d\n",
         vol->volName, // diskName ?
-        vol->dev->class == ADF_DEVCLASS_FLOP     ? "Floppy disk" :
-        vol->dev->class == ADF_DEVCLASS_HARDDISK ? "Hard disk partition" :
-        vol->dev->class == ADF_DEVCLASS_HARDFILE ? "HardFile" :
+        vol->dev->dev_class == ADF_DEVCLASS_FLOP     ? "Floppy disk" :
+        vol->dev->dev_class == ADF_DEVCLASS_HARDDISK ? "Hard disk partition" :
+        vol->dev->dev_class == ADF_DEVCLASS_HARDFILE ? "HardFile" :
         "Unknown!",
         adfVolIsFFS( vol ) ? "FFS" : "OFS",
         adfVolHasINTL( vol ) ? "INTL " : "",

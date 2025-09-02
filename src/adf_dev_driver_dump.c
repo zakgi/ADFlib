@@ -118,7 +118,7 @@ static struct AdfDevice * adfCreateDumpDevice( const char * const  filename,
     dev->sizeBlocks         = cylinders * heads * sectors;
 
     dev->type  = adfDevGetTypeByGeometry( &dev->geometry );
-    dev->class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
+    dev->dev_class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
         adfDevTypeGetClass( dev->type ) :
         adfDevGetClassBySizeBlocks( dev->sizeBlocks );
 
@@ -171,7 +171,7 @@ static struct AdfDevice * adfDevDumpOpen( const char * const   name,
     dev->sizeBlocks = (uint32_t)( ftell( *fd ) / dev->geometry.blockSize );
     fseek( *fd, 0, SEEK_SET );
 
-    dev->class = adfDevGetClassBySizeBlocks( dev->sizeBlocks );
+    dev->dev_class = adfDevGetClassBySizeBlocks( dev->sizeBlocks );
     dev->type  = ADF_DEVTYPE_UNKNOWN; // geometry unknown
     dev->nVol    = 0;
     dev->volList = NULL;

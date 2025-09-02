@@ -30,7 +30,7 @@
 static struct AdfDevMedium {
     const char * const           name;         // string id
     const struct AdfDevGeometry  geometry;
-    const AdfDevClass            class;
+    const AdfDevClass            dev_class;
     const char * const           descr;
 } adfDevMedia[ ADF_DEVTYPE_NUMTYPES + 1 ] = {
     { "unknown",{  0, 0,  0, 512 }, ADF_DEVCLASS_UNKNOWN,  "unknown"                         },
@@ -71,7 +71,7 @@ static struct AdfDevMedium {
 AdfDevClass adfDevTypeGetClass( AdfDevType type )
 {
     assert( type >= 0 && type < ADF_DEVTYPE_NUMTYPES );
-    return adfDevMedia[ type ].class;
+    return adfDevMedia[ type ].dev_class;
 }
 
 struct AdfDevGeometry adfDevTypeGetGeometry( AdfDevType type )
@@ -140,7 +140,7 @@ AdfDevClass adfDevGetClassBySizeBlocks( uint32_t sizeBlocks )
     // check the predefined list first
     const struct AdfDevMedium * const dm = adfDevGetMediumBySizeBlocks( sizeBlocks );
     if ( dm != NULL )
-        return dm->class;
+        return dm->dev_class;
 
     // assume an HD or HDF (independently on size, there are HDFs smaller than
     // standard 880k floppies...)

@@ -164,7 +164,7 @@ int main( const int            argc,
     } else if ( device->devType == ADF_DEVTYPE_FLOPHD ) {
         devtype_str     = "HD floppy (1760k)";
         } else*/
-    else if ( device->class == ADF_DEVCLASS_HARDFILE ) {
+    else if ( device->dev_class == ADF_DEVCLASS_HARDFILE ) {
         devtype_str = "Hardfile (hdf)";
     } else { //if ( dev->class == DEVCLASS_HARDDISK ) {
         fprintf( stderr, "Devices with RDB (partitioned) are not supported "
@@ -176,7 +176,7 @@ int main( const int            argc,
             devtype_str, options.adfName, options.volidx, options.fsType, options.label );
     fflush( stdout );
 
-    rc = ( device->class == ADF_DEVCLASS_HARDFILE ) ?
+    rc = ( device->dev_class == ADF_DEVCLASS_HARDFILE ) ?
         adfCreateHdFile( device, options.label, options.fsType ) :
         adfCreateFlop  ( device, options.label, options.fsType );
     if ( rc != ADF_RC_OK ) {

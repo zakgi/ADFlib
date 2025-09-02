@@ -162,7 +162,7 @@ void show_device_metadata( const struct AdfDevice * const  dev )
     printf( "%s", info );
     free( info );
 
-    if ( dev->class == ADF_DEVCLASS_HARDDISK )
+    if ( dev->dev_class == ADF_DEVCLASS_HARDDISK )
         show_hd_info( dev );
 }
 

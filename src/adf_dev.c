@@ -138,7 +138,7 @@ ADF_RETCODE adfDevMount( struct AdfDevice * const  dev )
 
     ADF_RETCODE rc;
 
-    switch( dev->class ) {
+    switch( dev->dev_class ) {
 
     case ADF_DEVCLASS_FLOP:
         rc = adfMountFlop ( dev );
@@ -272,7 +272,7 @@ static struct AdfDevice * adfDevOpenWithDrv_(
     }
 
     // set class depending only on size (until more data available...)
-    dev->class = adfDevGetClassBySizeBlocks( dev->sizeBlocks );
+    dev->dev_class = adfDevGetClassBySizeBlocks( dev->sizeBlocks );
 
     // if no geometry from the device (not native) set something reasonable
     if ( ! dev->drv->isNative() ) {
@@ -322,7 +322,7 @@ static struct AdfDevice * adfDevOpenWithDrv_(
 
     // classify device depending on having or not having RDB (HARDDISK vs. HARDFILE)
     if ( dev->rdb.status >= ADF_DEV_RDB_STATUS_EXIST ) {
-        if ( dev->class == ADF_DEVCLASS_FLOP ) {
+        if ( dev->dev_class == ADF_DEVCLASS_FLOP ) {
             // This should not happen, but... theoretically should work, too.
             // (still, at least warn...)
             adfEnv.wFct( " %s: '%s' is a floppy but Rigid Device Block (RDB) was found"
@@ -330,14 +330,14 @@ static struct AdfDevice * adfDevOpenWithDrv_(
                          __func__, name );
         }
 
-        dev->class = ADF_DEVCLASS_HARDDISK;
+        dev->dev_class = ADF_DEVCLASS_HARDDISK;
     } else {
-        if ( dev->class == ADF_DEVCLASS_HARDDISK )
-            dev->class = ADF_DEVCLASS_HARDFILE;
+        if ( dev->dev_class == ADF_DEVCLASS_HARDDISK )
+            dev->dev_class = ADF_DEVCLASS_HARDFILE;
     }
 
     // if hard disk (has RDB) - update geometry from data stored in RDB
-    if ( dev->class == ADF_DEVCLASS_HARDDISK ) {
+    if ( dev->dev_class == ADF_DEVCLASS_HARDDISK ) {
         const struct AdfRDSKblock * const rdsk = dev->rdb.block;
         assert( rdsk != NULL );
 
@@ -388,7 +388,7 @@ static struct AdfDevice * adfDevOpenWithDrv_(
 
     // update device and type after having final geometry set
     dev->type  = adfDevGetTypeByGeometry( &dev->geometry );  // do we have to?
-    //dev->class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
+    //dev->dev_class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
     //    adfDevTypeGetClass( dev->type ) :
     //    adfDevGetClassBySizeBlocks( dev->sizeBlocks );
 
@@ -416,8 +416,8 @@ static ADF_RETCODE adfDevSetCalculatedGeometry_( struct AdfDevice * const  dev )
     }
 
     // if not found on the predefined list - guess something reasonable...
-    if ( dev->class == ADF_DEVCLASS_HARDDISK ||
-         dev->class == ADF_DEVCLASS_HARDFILE )
+    if ( dev->dev_class == ADF_DEVCLASS_HARDDISK ||
+         dev->dev_class == ADF_DEVCLASS_HARDFILE )
     {
         // partitions must be aligned with cylinders(tracks) - this gives most
         // flexibility
@@ -425,7 +425,7 @@ static ADF_RETCODE adfDevSetCalculatedGeometry_( struct AdfDevice * const  dev )
         dev->geometry.heads     = 1;
         dev->geometry.sectors   = 1;
     } else {
-        adfEnv.eFct( "%s: invalid dev class %d", __func__, dev->class );
+        adfEnv.eFct( "%s: invalid dev class %d", __func__, dev->dev_class );
         return ADF_RC_ERROR;
     }
 
@@ -483,7 +483,7 @@ char * adfDevGetInfo( const struct AdfDevice * const  dev )
     if ( dev->type != ADF_DEVTYPE_UNKNOWN ) {
         devTypeInfo = adfDevTypeGetDescription( dev->type );
     } else {
-        switch ( dev->class ) {
+        switch ( dev->dev_class ) {
             // floppies must be covered above
 
         case ADF_DEVCLASS_HARDDISK:
