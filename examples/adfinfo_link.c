@@ -23,13 +23,7 @@
  */
 
 #include "adfinfo_link.h"
-
-//#include "adfinfo_common.h"
-//#include "adfinfo_dircache.h"
-
-//#include <adf_dir.h>
 #include <stdio.h>
-//#include <string.h>
 
 
 void show_link_metadata( struct AdfVolume * const  vol,
