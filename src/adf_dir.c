@@ -168,8 +168,8 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
         if ( hashTable[ i ] == 0 )
             continue;
 
-        ADF_SECTNUM nextSector = hashTable[ i ];
-        while ( nextSector != 0 ) {
+        ADF_SECTNUM sector = hashTable[ i ];
+        while ( sector != 0 ) {
             entry = (struct AdfEntry *) malloc( sizeof( struct AdfEntry ) );
             if ( ! entry ) {
                 adfFreeDirList( head );
@@ -177,7 +177,7 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
                 return NULL;
             }
 
-            if ( adfEntryRead( vol, nextSector, entry, &entryBlk ) != ADF_RC_OK ) {
+            if ( adfEntryRead( vol, sector, entry, &entryBlk ) != ADF_RC_OK ) {
                 free( entry );
                 adfFreeDirList( head );
                 return NULL;
@@ -195,7 +195,7 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
             if ( recurs && entry->type == ADF_ST_DIR )
                 cell->subdir = adfGetRDirEnt( vol, entry->sector, recurs );
 				 
-            nextSector = entryBlk.nextSameHash;
+            sector = entryBlk.nextSameHash;
         }
     }
 
