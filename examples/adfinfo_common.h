@@ -30,6 +30,9 @@
 
 void show_hashtable( const uint32_t hashtable[ ADF_HT_SIZE ] );
 
+bool change_dir( struct AdfVolume * const  vol,
+                 const char * const        dir_path );
+
 // replace non-printable with a dot ('.')
 static inline char printable( char c )
 {

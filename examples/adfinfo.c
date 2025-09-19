@@ -28,6 +28,7 @@
 
 #include "adf_dev_driver_nativ.h"
 #include "adfinfo_volume.h"
+#include "adfinfo_common.h"
 #include "adfinfo_dir.h"
 #include "adfinfo_file.h"
 #include "adfinfo_hd.h"
@@ -187,7 +188,7 @@ void show_dentry_metadata( struct AdfVolume * const  vol,
 
     //printf ( "Directory:\t%s\n", dir_path );
     if ( strcmp( dir_path, "." ) != 0 ) {
-        if ( adfChangeDir( vol, dir_path ) != ADF_RC_OK ) {
+        if ( ! change_dir( vol, dir_path ) ) {
             fprintf( stderr, "Invalid dir: '%s'\n", dir_path );
             goto show_entry_cleanup;
         }
