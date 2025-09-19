@@ -34,6 +34,10 @@ dist_check_DATA += \
 	cmd/adfinfo_hd/adfinfo_hd_test_volume_3 \
 	cmd/adfinfo_hd/adfinfo_hd_test_volume_4 \
 	cmd/adfinfo_hd/adfinfo_hd_test_volume_5 \
+	cmd/adfinfo_links/adfinfo_hlink_file \
+	cmd/adfinfo_links/adfinfo_slink_dir \
+	cmd/adfinfo_links/adfinfo_slink_file \
+	cmd/adfinfo_links/adfinfo_slink_file_same_dir \
 	cmd/adfsalvage/01_show_deleted_entries \
 	cmd/adfsalvage/02_show_bitmap \
 	cmd/adfsalvage/03_rebuild_bitmap \
@@ -42,7 +46,9 @@ dist_check_DATA += \
 	cmd/adfsalvage/06_show_deleted_entries \
 	cmd/adfsalvage/07_salvaged_file_info \
 	cmd/adfsalvage/08_show_bitmap \
+	cmd/unadf/extract_bin_to_pipe \
 	cmd/unadf/extract_files_to_dir_1_extract \
+	cmd/unadf/extract_files_to_dir_2_check_contents_csh \
 	cmd/unadf/extract_files_to_dir_2_check_permissions_csh \
 	cmd/unadf/extract_files_to_dir_2_check_permissions_startup_sequence \
 	cmd/unadf/extract_files_to_dir_2_check_permissions_system_configuration \

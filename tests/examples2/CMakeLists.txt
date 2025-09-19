@@ -15,6 +15,9 @@ add_test( test_adfinfo.sh ${BASH_PROGRAM}
 add_test( test_adfinfo_hd.sh ${BASH_PROGRAM}
           test_adfinfo_hd.sh )
 
+add_test( test_adfinfo_links.sh ${BASH_PROGRAM}
+          test_adfinfo_links.sh )
+
 add_test( test_adf_floppy.sh ${BASH_PROGRAM}
           test_adf_floppy.sh )
 
