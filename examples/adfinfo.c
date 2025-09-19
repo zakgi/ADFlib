@@ -31,6 +31,7 @@
 #include "adfinfo_dir.h"
 #include "adfinfo_file.h"
 #include "adfinfo_hd.h"
+#include "adfinfo_link.h"
 #include "pathutils.h"
 
 struct args {
@@ -212,12 +213,13 @@ void show_dentry_metadata( struct AdfVolume * const  vol,
         show_file_metadata( vol, sectNum );
         break;
     case ADF_ST_LFILE:
-        //show_hardlink_metadata ( vol, sectNum );
+        show_link_metadata( vol, sectNum );
         break;
     case ADF_ST_LDIR:
-        //show_hardlink_metadata ( vol, sectNum );
+        show_link_metadata( vol, sectNum );
         break;
     case ADF_ST_LSOFT:
+        show_link_metadata( vol, sectNum );
         break;
     default:
         fprintf( stderr, "unknown entry type %d\n", entry.secType );

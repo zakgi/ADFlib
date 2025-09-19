@@ -56,6 +56,8 @@ add_executable ( adfinfo
   adfinfo_file.h
   adfinfo_hd.c
   adfinfo_hd.h
+  adfinfo_link.c
+  adfinfo_link.h
   adfinfo_volume.c
   adfinfo_volume.h
   pathutils.c
