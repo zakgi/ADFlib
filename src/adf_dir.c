@@ -173,17 +173,12 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
                  adfEnv.eFct( "%s: malloc", __func__ );
                  return NULL;
              }
-             if ( adfReadEntryBlock( vol, hashTable[ i ], &entryBlk ) != ADF_RC_OK ) {
+
+             if ( adfEntryRead( vol, hashTable[ i ], entry, &entryBlk ) != ADF_RC_OK ) {
                  free( entry );
                  adfFreeDirList( head );
                  return NULL;
              }
-             if ( adfEntBlock2Entry( &entryBlk, entry ) != ADF_RC_OK ) {
-                 free( entry );
-                 adfFreeDirList( head );
-                 return NULL;
-             }
-             entry->sector = hashTable[ i ];
 	
              if ( head == NULL )
                  head = cell = adfListNewCell( NULL, (void *) entry );
@@ -207,18 +202,12 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
                      adfEnv.eFct( "%s: malloc", __func__ );
                      return NULL;
                  }
-                 if ( adfReadEntryBlock( vol, nextSector, &entryBlk ) != ADF_RC_OK ) {
-                     free( entry );
-                     adfFreeDirList( head );
-                     return NULL;
-                 }
 
-                 if ( adfEntBlock2Entry( &entryBlk, entry ) != ADF_RC_OK ) {
+                 if ( adfEntryRead( vol, nextSector, entry, &entryBlk ) != ADF_RC_OK ) {
                      free( entry );
                      adfFreeDirList( head );
                      return NULL;
                  }
-                 entry->sector = nextSector;
 	
                  cell = adfListNewCell( cell, (void *) entry );
                  if ( cell == NULL ) {
