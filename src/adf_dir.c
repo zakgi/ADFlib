@@ -168,34 +168,7 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
         if ( hashTable[ i ] == 0 )
             continue;
 
-        entry = (struct AdfEntry *) malloc( sizeof( struct AdfEntry ) );
-        if ( ! entry ) {
-            adfFreeDirList( head );
-            adfEnv.eFct( "%s: malloc", __func__ );
-            return NULL;
-        }
-
-        if ( adfEntryRead( vol, hashTable[ i ], entry, &entryBlk ) != ADF_RC_OK ) {
-            free( entry );
-            adfFreeDirList( head );
-            return NULL;
-        }
-	
-        if ( head == NULL )
-            head = cell = adfListNewCell( NULL, (void *) entry );
-        else
-            cell = adfListNewCell( cell, (void *) entry );
-        if ( cell == NULL ) {
-            free( entry );
-            adfFreeDirList( head );
-            return NULL;
-        }
-
-        if ( recurs && entry->type == ADF_ST_DIR )
-            cell->subdir = adfGetRDirEnt( vol, entry->sector, recurs );
-
-        /* same hashcode linked list */
-        ADF_SECTNUM nextSector = entryBlk.nextSameHash;
+        ADF_SECTNUM nextSector = hashTable[ i ];
         while ( nextSector != 0 ) {
             entry = (struct AdfEntry *) malloc( sizeof( struct AdfEntry ) );
             if ( ! entry ) {
@@ -210,7 +183,10 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
                 return NULL;
             }
 	
-            cell = adfListNewCell( cell, (void *) entry );
+            if ( head == NULL )
+                head = cell = adfListNewCell( NULL, (void *) entry );
+            else
+                cell = adfListNewCell( cell, (void *) entry );
             if ( cell == NULL ) {
                 adfFreeDirList( head );
                 return NULL;
