@@ -142,7 +142,9 @@ struct AdfFile * adfFileOpen( struct AdfVolume * const  vol,
         }
 
         // entry should be a real file now
-        if ( entry.realEntry != 0 ) {
+        if ( entry.secType != ADF_ST_FILE ||
+             entry.realEntry != 0 )
+        {
             //... so if it is still a (hard)link - error...
             return NULL;
         }
