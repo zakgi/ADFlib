@@ -109,6 +109,30 @@ ADF_SECTNUM adfParentDir( struct AdfVolume * const  vol )
     return ADF_RC_OK;
 }
 
+/*
+ * adfEntryRead
+ *
+ */
+ADF_RETCODE adfEntryRead( const struct AdfVolume * const  vol,
+                          const ADF_SECTNUM               nSect,
+                          struct AdfEntry * const         entry,
+                          struct AdfEntryBlock * const    entryBlk )
+{
+    //struct AdfEntryBlock entryBlk;
+
+    int rc = adfReadEntryBlock( vol, nSect, entryBlk );
+    if ( rc != ADF_RC_OK )
+        return rc;
+
+    rc = adfEntBlock2Entry( entryBlk, entry );
+    if ( rc != ADF_RC_OK )
+        return rc;
+
+    entry->sector = nSect;
+
+    return ADF_RC_OK;
+}
+
 
 /*
  * adfGetDirEnt

@@ -58,6 +58,12 @@ ADF_PREFIX ADF_RETCODE adfChangeDir( struct AdfVolume * const  vol,
                                      const char * const        name );
 ADF_PREFIX ADF_RETCODE adfParentDir( struct AdfVolume * const  vol );
 
+/* read entry */
+ADF_PREFIX ADF_RETCODE adfEntryRead( const struct AdfVolume * const  vol,
+                                     const ADF_SECTNUM               nSect,
+                                     struct AdfEntry * const         entry,
+                                     struct AdfEntryBlock * const    entryBlk );
+
 /* get and free list of directory entries */
 ADF_PREFIX struct AdfList * adfGetDirEnt( const struct AdfVolume * const  vol,
                                           const ADF_SECTNUM               nSect );
