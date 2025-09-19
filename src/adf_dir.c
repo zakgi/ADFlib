@@ -154,7 +154,6 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
 {
     struct AdfList *cell, *head;
     struct AdfEntry * entry;
-    int32_t *hashTable;
     struct AdfEntryBlock parent, entryBlk;
 
     if ( adfEnv.useDirCache && adfVolHasDIRCACHE( vol ) )
@@ -163,7 +162,7 @@ struct AdfList * adfGetRDirEnt( const struct AdfVolume * const  vol,
     if ( adfReadEntryBlock( vol, nSect, &parent ) != ADF_RC_OK )
         return NULL;
 
-    hashTable = parent.hashTable;
+    const int32_t * const hashTable = parent.hashTable;
     cell = head = NULL;
     for ( int i = 0 ; i < ADF_HT_SIZE ; i++ ) {
         if ( hashTable[ i ] == 0 )
