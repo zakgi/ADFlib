@@ -6,4 +6,5 @@ usr/bin/adfbitmap
 usr/bin/adfimgcreate
 usr/bin/adfformat
 usr/bin/adfinfo
+usr/bin/adfls
 usr/bin/adfsalvage
