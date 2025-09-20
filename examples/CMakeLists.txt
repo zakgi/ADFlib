@@ -74,6 +74,8 @@ add_executable ( adfls
   adfls.c
   common.c
   common.h
+  pathutils.c
+  pathutils.h
   ${ADFLIB_CUSTOM_GETOPT_SRC}
 )
 target_link_libraries ( adfls adf )
@@ -102,6 +104,7 @@ install ( TARGETS
   adfformat
   adfimgcreate
   adfinfo
+  adfls
   adfsalvage
   unadf
 )

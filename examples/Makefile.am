@@ -51,7 +51,9 @@ adfinfo_DEPENDENCIES = $(top_builddir)/src/libadf.la
 
 adfls_SOURCES = adfls.c \
   common.c \
-  common.h
+  common.h \
+  pathutils.c \
+  pathutils.h
 adfls_LDADD = $(ADFLIBS)
 adfls_DEPENDENCIES = $(top_builddir)/src/libadf.la
 
