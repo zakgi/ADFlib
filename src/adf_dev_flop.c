@@ -108,8 +108,8 @@ ADF_RETCODE adfMountFlop( struct AdfDevice * const  dev )
                                      (unsigned) ADF_MAX_NAME_LEN ) );
 
         if ( boot.rootBlock != vol->rootBlock ) {
-            adfEnv.eFct( "%s: invalid rootBlock value in bootblock %d, "
-                         "valid calculated %d, volume '%s'",
+            adfEnv.wFct( "%s: rootBlock sector set in bootblock %d, "
+                         "different that calculated %d, volume '%s'",
                          __func__, boot.rootBlock, vol->rootBlock, vol->volName );
         }
     } else { // if ( adfVolIsPFS ( vol ) ) {
