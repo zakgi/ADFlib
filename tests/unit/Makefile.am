@@ -11,6 +11,7 @@ check_PROGRAMS = \
     test_adf_util \
     test_adfDays2Date \
     test_adfPos2DataBlock \
+    test_adf_vector \
     test_dev_open \
     test_dev_mount\
     test_adf_file_util \
@@ -62,6 +63,11 @@ test_adfPos2DataBlock_SOURCES = test_adfPos2DataBlock.c \
 test_adfPos2DataBlock_CFLAGS = $(CHECK_CFLAGS)
 test_adfPos2DataBlock_LDADD = $(ADFLIBS) $(CHECK_LIBS)
 test_adfPos2DataBlock_DEPENDENCIES = $(top_builddir)/src/libadf.la
+
+test_adf_vector_SOURCES = test_adf_vector.c adf_vector.c adf_vector.h
+test_adf_vector_CFLAGS = $(CHECK_CFLAGS)
+test_adf_vector_LDADD = $(ADFLIBS) $(CHECK_LIBS)
+test_adf_vector_DEPENDENCIES = $(top_builddir)/src/libadf.la
 
 test_test_util_SOURCES = test_test_util.c test_util.c test_util.h
 test_test_util_CFLAGS = $(CHECK_CFLAGS)
