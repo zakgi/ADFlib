@@ -20,6 +20,7 @@
  */
 
 #include "common.h"
+#include "pathutils.h"
 
 #include <adflib.h>
 #include <errno.h>
