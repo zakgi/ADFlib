@@ -25,9 +25,6 @@
 #include "adfinfo_common.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 
 void show_hashtable( const uint32_t hashtable[ ADF_HT_SIZE ] )
 {
@@ -38,32 +35,4 @@ void show_hashtable( const uint32_t hashtable[ ADF_HT_SIZE ] )
             printf( "  hashtable [ %2u ]:\t\t0x%x\t\t%u\n",
                     i, hash_i, hash_i );
     }
-}
-
-
-bool change_dir( struct AdfVolume * const  vol,
-                 const char * const        dir_path )
-{
-    char * const dirpath_tmp = strdup( dir_path );
-
-    char * dir = dirpath_tmp;
-    char * dir_end;
-    while ( *dir && ( dir_end = strchr( dir, '/' ) ) ) {
-        *dir_end = '\0';     // replace '/' (setting end of the dirname to change to)
-
-        if ( adfChangeDir( vol, dir ) != ADF_RC_OK ) {
-            free( dirpath_tmp );
-            return false;
-        }
-
-        dir = dir_end + 1;   // next subdir
-    }
-
-    if ( adfChangeDir( vol, dir ) != ADF_RC_OK ) {
-        free( dirpath_tmp );
-        return false;
-    }
-
-    free( dirpath_tmp );
-    return true;
 }

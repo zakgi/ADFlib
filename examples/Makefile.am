@@ -41,6 +41,8 @@ adfinfo_SOURCES = adfinfo.c \
   adfinfo_link.h \
   adfinfo_volume.c \
   adfinfo_volume.h \
+  common.c \
+  common.h \
   pathutils.c \
   pathutils.h
 adfinfo_LDADD = $(ADFLIBS)

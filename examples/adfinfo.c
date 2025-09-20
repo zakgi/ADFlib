@@ -33,6 +33,7 @@
 #include "adfinfo_file.h"
 #include "adfinfo_hd.h"
 #include "adfinfo_link.h"
+#include "common.h"
 #include "pathutils.h"
 
 struct args {

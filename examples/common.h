@@ -1,7 +1,7 @@
 /*
- *  adfinfo_common - common utility functions
+ *  common - common utility functions
  *
- *  Copyright (C) 2023-2025 Tomasz Wolak
+ *  Copyright (C) 2025 Tomasz Wolak
  *
  *  This file is part of adfinfo, an utility program showing low-level
  *  filesystem metadata of Amiga Disk Files (ADFs).
@@ -22,18 +22,11 @@
  *
  */
 
-#ifndef ADFINFO_COMMON_H
-#define ADFINFO_COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <adflib.h>
-#include <ctype.h>
 
-void show_hashtable( const uint32_t hashtable[ ADF_HT_SIZE ] );
-
-// replace non-printable with a dot ('.')
-static inline char printable( char c )
-{
-    return ( isalnum( c ) ? c : '.' );
-}
-
+bool change_dir( struct AdfVolume * const  vol,
+                 const char * const        dir_path );
 #endif
