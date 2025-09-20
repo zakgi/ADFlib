@@ -63,7 +63,9 @@ add_executable( test_adfDays2Date
                 ${PROJECT_SOURCE_DIR}/src/adf_util.c )
 
 add_executable( test_adf_vector
-                test_adf_vector.c )
+                test_adf_vector.c
+                ${PROJECT_SOURCE_DIR}/src/adf_vector.c
+                ${PROJECT_SOURCE_DIR}/src/adf_vector.h )
 
 
 add_executable( test_dev_open
@@ -127,7 +129,7 @@ target_link_libraries( test_test_util             PUBLIC adf ${CHECK_LIBRARIES} 
 target_link_libraries( test_adf_util              PUBLIC adf ${CHECK_LIBRARIES} )
 target_link_libraries( test_adfPos2DataBlock      PUBLIC adf ${CHECK_LIBRARIES} )
 target_link_libraries( test_adfDays2Date          PUBLIC     ${CHECK_LIBRARIES} )
-target_link_libraries( test_adf_vector            PUBLIC adf ${CHECK_LIBRARIES} )
+target_link_libraries( test_adf_vector            PUBLIC     ${CHECK_LIBRARIES} )
 
 target_link_libraries( test_dev_open              PUBLIC adf ${CHECK_LIBRARIES} )
 target_link_libraries( test_dev_mount             PUBLIC adf ${CHECK_LIBRARIES} )

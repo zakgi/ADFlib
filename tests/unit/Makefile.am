@@ -64,9 +64,12 @@ test_adfPos2DataBlock_CFLAGS = $(CHECK_CFLAGS)
 test_adfPos2DataBlock_LDADD = $(ADFLIBS) $(CHECK_LIBS)
 test_adfPos2DataBlock_DEPENDENCIES = $(top_builddir)/src/libadf.la
 
-test_adf_vector_SOURCES = test_adf_vector.c adf_vector.c adf_vector.h
+test_adf_vector_SOURCES = test_adf_vector.c \
+    $(top_srcdir)/src/adf_vector.c \
+    $(top_srcdir)/src/adf_vector.h
 test_adf_vector_CFLAGS = $(CHECK_CFLAGS)
-test_adf_vector_LDADD = $(ADFLIBS) $(CHECK_LIBS)
+#test_adf_vector_LDADD = $(ADFLIBS) $(CHECK_LIBS)
+test_adf_vector_LDADD = $(CHECK_LIBS)
 test_adf_vector_DEPENDENCIES = $(top_builddir)/src/libadf.la
 
 test_test_util_SOURCES = test_test_util.c test_util.c test_util.h
