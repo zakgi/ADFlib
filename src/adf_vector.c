@@ -23,6 +23,7 @@
 
 #include "adf_vector.h"
 
+#include <assert.h>
 #include <stdlib.h>
 
 
@@ -33,6 +34,8 @@ static void adfVectorDestroy( void * const  container );
 struct AdfVector adfVectorCreate( const unsigned  nItems,
                                   const unsigned  itemSize )
 {
+    assert( itemSize > 0 );
+
     struct AdfVector vector = {
         .items    = ( nItems > 0 ? malloc( nItems * itemSize ) : NULL ),
         .itemSize = itemSize,
