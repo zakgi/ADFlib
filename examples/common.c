@@ -31,6 +31,12 @@
 bool change_dir( struct AdfVolume * const  vol,
                  const char * const        dir_path )
 {
+    if ( *dir_path == "\0" )
+    //   ||  strcmp( dir_path, "." ) == 0 ) // "." is a legal name in AmigaDOS(!)
+    {
+        return true;
+    }
+
     char * const dirpath_tmp = strdup( dir_path );
 
     char * dir = dirpath_tmp;
