@@ -142,6 +142,11 @@ AdfDevClass adfDevGetClassBySizeBlocks( uint32_t sizeBlocks )
     if ( dm != NULL )
         return dm->class;
 
+    // assume an HD or HDF (independently on size, there are HDFs smaller than
+    // standard 880k floppies...)
+    return ADF_DEVCLASS_HARDDISK;
+
+    /*
     // if not found on the list - maybe it's an HD or HDF?
     const struct AdfDevMedium * const largestFlop = &adfDevMedia[ ADF_DEVTYPE_FHD83 ];
     if ( sizeBlocks > largestFlop->geometry.cylinders *
@@ -156,6 +161,7 @@ AdfDevClass adfDevGetClassBySizeBlocks( uint32_t sizeBlocks )
         //return -1;
         return ADF_DEVCLASS_UNKNOWN;
     }
+    */
 }
 
 
