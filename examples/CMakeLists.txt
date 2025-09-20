@@ -70,6 +70,17 @@ set_target_properties ( adfinfo PROPERTIES
   INSTALL_RPATH "/usr/local/lib"
 )
 
+add_executable ( adfls
+  adfls.c
+  common.c
+  common.h
+  ${ADFLIB_CUSTOM_GETOPT_SRC}
+)
+target_link_libraries ( adfls adf )
+set_target_properties ( adfls PROPERTIES
+  INSTALL_RPATH "/usr/local/lib"
+)
+
 add_executable ( adfsalvage
   adfsalvage.c
   ${ADFLIB_CUSTOM_GETOPT_SRC}

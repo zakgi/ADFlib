@@ -6,6 +6,7 @@ bin_PROGRAMS = \
 	adfformat \
 	adfimgcreate \
 	adfinfo \
+	adfls \
 	adfsalvage \
 	unadf
 
@@ -47,6 +48,12 @@ adfinfo_SOURCES = adfinfo.c \
   pathutils.h
 adfinfo_LDADD = $(ADFLIBS)
 adfinfo_DEPENDENCIES = $(top_builddir)/src/libadf.la
+
+adfls_SOURCES = adfls.c \
+  common.c \
+  common.h
+adfls_LDADD = $(ADFLIBS)
+adfls_DEPENDENCIES = $(top_builddir)/src/libadf.la
 
 adfsalvage_SOURCES = adfsalvage.c
 adfsalvage_LDADD = $(ADFLIBS)

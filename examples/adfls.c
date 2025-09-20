@@ -1,0 +1,376 @@
+/*
+ *  adfls - show contents of directories on ADF volumes
+ *
+ *  Copyright (C) 2025 Tomasz Wolak
+ *
+ *  adfls is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  adfls is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Foobar; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+#include "common.h"
+
+#include <adflib.h>
+#include <errno.h>
+#include <inttypes.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifndef HAVE_GETOPT
+#include "getopt.h"      // use custom getopt
+#else
+#include <unistd.h>
+#endif
+
+#ifndef WIN32
+#include <libgen.h>
+#endif
+
+typedef struct CmdlineOptions {
+    char            *adfDevName;
+    unsigned         volidx;
+    struct AdfVector paths;
+    bool             verbose,
+                     help,
+                     version;
+} CmdlineOptions;
+
+
+bool parse_args( const int * const     argc,
+                 char * const * const  argv,
+                 CmdlineOptions *      options );
+
+bool show_paths( struct AdfVolume * const       vol,
+                 const struct AdfVector * const paths );
+
+bool show_path( struct AdfVolume * const  vol,
+                const char * const        path );
+
+bool show_dir( struct AdfVolume * const  vol,
+               const char * const        dir_name );
+
+bool show_file( struct AdfVolume * const  vol,
+                const char * const        file_name );
+
+bool show_current_dir( struct AdfVolume * const  vol );
+
+void show_entry( const struct AdfEntry * const entry,
+                 const bool                    fullInfo );
+
+void usage(void)
+{
+    printf( "\nUsage:  adfls  [-p volume] adf_device [path]...\n\n"
+            "List contents of directories of an ADF/HDF volume.\n\n"
+            "Options:\n"
+            "  -p volume  volume/partition index, counting from 0, default: 0\n"
+            "  -v         be more verbose\n\n"
+            "  -h         show help\n"
+            "  -V         show version\n\n" );
+}
+
+
+int main( const int     argc,
+          char * const argv[] )
+{
+    CmdlineOptions options;
+    if ( ! parse_args( &argc, argv, &options ) ) {
+        fprintf( stderr, "Usage info:  adfsalvage -h\n" );
+        exit( EXIT_FAILURE );
+    }
+
+    if ( options.help ) {
+        usage();
+        exit( EXIT_SUCCESS );
+    }
+
+    if ( options.version ) {
+        printf( "%s, powered by ADFlib: build   v%s (%s)\n"
+                "                           runtime v%s (%s)\n",
+                ADFLIB_VERSION,
+                ADFLIB_VERSION, ADFLIB_DATE,
+                adfGetVersionNumber(), adfGetVersionDate() );
+        exit( EXIT_SUCCESS );
+    }
+
+    int status = 0;
+
+    adfLibInit();
+    adfEnvSetProperty( ADF_PR_USEDIRC, true );
+ 
+    struct AdfDevice * const dev = adfDevOpen( options.adfDevName,
+                                               ADF_ACCESS_MODE_READONLY );
+    if ( dev == NULL ) {
+        fprintf( stderr, "Error opening device '%s' - aborting...\n",
+                 options.adfDevName );
+        status = 1;
+        goto clean_up_env;
+    }
+
+    ADF_RETCODE rc = adfDevMount( dev );
+    if ( rc != ADF_RC_OK ) {
+        fprintf( stderr, "Error mounting device '%s' - aborting...\n",
+                 options.adfDevName );
+        status = 2;
+        goto clean_up_dev_close;
+    }
+
+    //const char * const devinfo = adfDevGetInfo( dev );
+    //printf( "%s\n", devinfo );
+    //free( devinfo );
+
+    struct AdfVolume * const vol = adfVolMount( dev, (int) options.volidx,
+                                                ADF_ACCESS_MODE_READONLY );
+    if ( vol == NULL ) {
+        fprintf( stderr, "Error mounting volume %d of '%s' - aborting...\n",
+                 options.volidx, options.adfDevName );
+        status = 3;
+        goto clean_up_dev_unmount;
+    }
+
+    if ( ! show_paths( vol, &options.paths ) )
+        status = ENOENT;
+    
+//clean_up_volume:
+    adfVolUnMount( vol );
+
+clean_up_dev_unmount:
+    adfDevUnMount( dev );
+
+clean_up_dev_close:
+    adfDevClose( dev );
+
+clean_up_env:
+    adfLibCleanUp();
+
+    //printf("options paths items ptr (destroy) = 0x%"PRIxPTR"\n",
+    //       options.paths.items );
+    options.paths.destroy( &options.paths );
+
+    return status;
+}
+
+
+/* return value: true - valid, false - invalid */
+bool parse_args( const int * const     argc,
+                 char * const * const  argv,
+                 CmdlineOptions *      options )
+{
+    // set default options
+    memset( options, 0, sizeof( CmdlineOptions ) );
+    options->volidx  = 0;
+    options->verbose =
+    options->help    =
+    options->version = false;
+    options->paths   = adfVectorCreate( 0, sizeof(char *) );
+
+    const char * valid_options = "p:hvV";
+    int opt;
+    while ( ( opt = getopt( *argc, (char * const *) argv, valid_options ) ) != -1 ) {
+//        printf ( "optind %d, opt %c, optarg %s\n", optind, ( char ) opt, optarg );
+        switch ( opt ) {
+        case 'p': {
+            // partition (volume) number (index)
+            char * endptr = NULL;
+            options->volidx = ( unsigned int ) strtoul( optarg, &endptr, 10 );
+            if ( endptr == optarg ||
+                 options->volidx > 255 )  // is there a limit for max. number of partitions???
+            {
+                fprintf( stderr, "Invalid volume/partition %u.\n", options->volidx );
+                return false;
+            }
+            continue;
+        }
+
+        case 'v':
+            options->verbose = true;
+            continue;
+
+        case 'h':
+            options->help = true;
+            return true;
+
+        case 'V':
+            options->version = true;
+            return true;
+
+        default:
+            return false;
+        }
+    }
+
+    /* the name of the adf device - required */
+    if ( optind > *argc - 1 ) {
+        fprintf( stderr, "Missing the name of an adf file/device.\n" );
+        return false;
+    }
+    options->adfDevName = argv[ optind++ ];
+
+    if ( optind >= *argc )
+        return true;
+
+    /* (optional) list of files (given as sectors of their file header blocks)
+       to undelete */
+    options->paths = adfVectorCreate( (unsigned)( *argc - optind ),
+                                      sizeof(char *) );
+    if ( options->paths.items == NULL ) {
+        fprintf( stderr, "Memory allocation error.");
+        return false;
+    }
+
+    //printf("options paths items ptr (create) = 0x%"PRIxPTR"\n",
+    //       options->paths.items );
+
+    for ( unsigned i = 0 ; i < options->paths.nItems ; i++ ) {
+        //printf ("Adding %s\n", argv[ optind ] );
+        ( &( (char **) options->paths.items )[0] )[ i ] = argv[ optind++ ];
+    }
+
+    //printf("options paths items ptr (create 2) = 0x%"PRIxPTR"\n",
+    //       options->paths.items );
+
+    return true;
+}
+
+// returns true on success
+bool show_paths( struct AdfVolume * const       vol,
+                   const struct AdfVector * const paths )
+{
+
+    if ( paths->nItems < 1 ) {
+        //printf (" CASE 1\n");
+        return show_path( vol, "" );
+    }
+
+    bool status = true;
+
+    for ( unsigned i = 0; i < paths->nItems; i++ ) {
+        //printf (" CASE 2\n");
+        adfToRootDir( vol );
+        const char * const path = ( &( (char **) paths->items )[0] )[ i ];
+        if ( paths->nItems > 1 )
+            printf("\n%s:\n", path );
+        if ( ! show_path( vol, path ) )
+            status = false;
+    }
+
+    return status;
+}
+
+
+bool show_path( struct AdfVolume * const  vol,
+                const char * const        path )
+{
+    //printf("%s: path '%s'\n", __func__, path );
+    const char * path_relative = path;
+
+    // skip all leading '/' from the path
+    while ( *path_relative == '/' )
+        path_relative++;
+
+    if ( *path_relative == '\0' ) {
+        return show_current_dir( vol );
+    }
+
+    // not in the root directory so must chdir to the proper one
+    //printf("\nChanging dir to %s.\", );
+    char * const dirpath_buf   = strdup( path_relative );
+    char * const dir_path      = dirname( dirpath_buf );
+    char * const entryname_buf = strdup( path );
+    char * const entry_name    = basename( entryname_buf );
+
+    bool status = true;
+    if ( strcmp( dir_path, "." ) != 0 &&
+         ! change_dir( vol, dir_path ) )
+    {
+        fprintf( stderr, "Invalid dir: '%s'\n", dir_path );
+        status = false;
+        goto cleanup;
+    }
+
+    if ( strlen( entry_name ) > 0 &&
+         strcmp( entry_name, "." ) != 0 )
+    {
+        // get entry
+        struct AdfEntry * const entry = malloc( sizeof( struct AdfEntry ) );
+        if ( entry == NULL ) {
+            status = false;
+            goto cleanup;
+        }
+        ADF_RETCODE rc = adfGetEntry( vol, vol->curDirPtr,
+                                      entry_name, entry );
+        if ( rc != ADF_RC_OK ) {
+            //fprintf( stderr, "Error getting entry for path '%s'.\n", path );
+            fprintf( stderr, "%s: No such file or directory.\n", path );
+            status = false;
+
+            //adfFreeEntry( entry ); - this fails(!)
+            free( entry );
+
+            goto cleanup;
+        }
+
+        if ( entry->type == ADF_ST_DIR ) {
+            if ( ! change_dir( vol, entry_name ) ) {
+                fprintf( stderr, "Cannot enter dir: '%s'\n", path );
+                adfFreeEntry( entry );
+                status = false;
+                goto cleanup;
+            }
+            
+            show_current_dir( vol );
+        }
+        else
+            show_entry( entry, false );
+
+        adfFreeEntry( entry );
+    } else {
+        show_current_dir( vol );
+    }
+
+cleanup:
+    free( entryname_buf );
+    free( dirpath_buf );
+
+    return true;
+}
+
+
+bool show_current_dir( struct AdfVolume * const  vol )
+{
+    struct AdfList * const list = adfGetDirEnt( vol, vol->curDirPtr );
+
+    for ( struct AdfList * node = list; node; node = node->next ) {
+        show_entry( node->content, false );
+    }
+
+    adfFreeDirList( list );
+
+    return true;
+}
+
+void show_entry( const struct AdfEntry * const entry,
+                 const bool                    fullInfo )
+{
+    printf( "%s\n", entry->name );
+}
+
+/*
+bool show_dir( struct AdfVolume * const  vol,
+               const char * const        dir_name );
+
+bool show_file( struct AdfVolume * const  vol,
+                const char * const        file_name );
+
+*/
