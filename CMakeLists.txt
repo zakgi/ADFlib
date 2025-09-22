@@ -213,6 +213,7 @@ install( FILES
     doc/adfformat.1
     doc/adfimgcreate.1
     doc/adfinfo.1
+    doc/adfls.1
     doc/adfsalvage.1
     doc/unadf.1
 #    TYPE MAN   --> installs to /usr/local/share/man, not to .../man/man1
