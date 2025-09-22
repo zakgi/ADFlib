@@ -394,10 +394,16 @@ void show_entry( struct AdfVolume * const      vol,
         }
 
         if ( entry->type == ADF_ST_LSOFT ) {
-            printf( "%s %10u %s -> %s\n", type, size, entry->name,
+            printf( "%s %10u  %4d/%02d/%02d %2d:%02d:%02d  %s -> %s\n",
+                    type, size,
+                    entry->year, entry->month, entry->days,
+                    entry->hour, entry->mins, entry->secs, entry->name,
                     ( (struct AdfLinkBlock *) &entry_block )->realName );
         } else {
-            printf( "%s %10u %s\n", type, size, entry->name );
+            printf( "%s %10u  %4d/%02d/%02d %2d:%02d:%02d  %s\n",
+                    type, size,
+                    entry->year, entry->month, entry->days,
+                    entry->hour, entry->mins, entry->secs, entry->name );
         }
     } else {
         printf( "%s\n", entry->name );
