@@ -23,8 +23,9 @@ nobase_dist_doc_DATA = \
 
 dist_man_MANS = \
 	adfbitmap.1 \
-	adfimgcreate.1 \
 	adfformat.1 \
-	adfsalvage.1 \
+	adfimgcreate.1 \
 	adfinfo.1 \
+	adfls.1 \
+	adfsalvage.1 \
 	unadf.1
