@@ -399,7 +399,7 @@ void show_entry( struct AdfVolume * const      vol,
         }
 
         // get size
-        unsigned size = 1;
+        unsigned size = ADF_LOGICAL_BLOCK_SIZE;
         if ( entry->type == ADF_ST_FILE ) {
             size = ( (struct AdfFileHeaderBlock *) &entry_block )->byteSize;
         }
