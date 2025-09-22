@@ -71,8 +71,6 @@ void show_entry( struct AdfVolume * const      vol,
                  const struct AdfEntry * const entry,
                  const bool                    fullInfo );
 
-char * get_symlink_real_name( struct AdfVolume * const vol,
-                              const char * const       name );
 
 void usage(void)
 {
@@ -376,13 +374,30 @@ void show_entry( struct AdfVolume * const      vol,
                                     entry->type == ADF_ST_LDIR  ? "LD" :
                                     entry->type == ADF_ST_LSOFT ? "LS" : "? " );
 
+        // get entry block (for detailed info)
+        struct AdfEntryBlock entry_block;
+        ADF_SECTNUM sector = adfGetEntryBlock( vol, vol->curDirPtr, entry->name,
+                                               &entry_block );
+        if ( sector < 0 ) {
+            // this should not happen as the entry block was already read earlier
+            // but checking anyway...
+            fprintf( stderr, "Error getting entry for '%s', sector %d.\n",
+                     entry->name, sector );
+            printf( "%s\n", entry->name );
+            return;
+        }
+
+        // get size
+        unsigned size = 1;
+        if ( entry->type == ADF_ST_FILE ) {
+            size = ( (struct AdfFileHeaderBlock *) &entry_block )->byteSize;
+        }
 
         if ( entry->type == ADF_ST_LSOFT ) {
-            char * const real_name = get_symlink_real_name( vol, entry->name );
-            printf( "%s  %s -> %s\n", type, entry->name, real_name );
-            free( real_name );
+            printf( "%s %10u %s -> %s\n", type, size, entry->name,
+                    ( (struct AdfLinkBlock *) &entry_block )->realName );
         } else {
-            printf( "%s  %s\n", type, entry->name );
+            printf( "%s %10u %s\n", type, size, entry->name );
         }
     } else {
         printf( "%s\n", entry->name );
@@ -397,27 +412,3 @@ bool show_file( struct AdfVolume * const  vol,
                 const char * const        file_name );
 
 */
-
-/*
- * returns a pointer to allocated string (must be free()d!) with the real name
- * of a symbolic link with specified name (in current directory! vol->curDirPtr!)
- */
-char * get_symlink_real_name( struct AdfVolume * const vol,
-                              const char * const       name )
-{
-    struct AdfLinkBlock link_block;
-
-    ADF_SECTNUM sector = adfGetEntryBlock( vol, vol->curDirPtr, name,
-                                           (struct AdfEntryBlock * const) &link_block );
-    if ( sector < 0 ) {
-        // this should not happed as the link block was already read earlier
-        // but checking anyway...
-        fprintf( stderr, "Error getting entry for symlink '%s', sector %d.\n",
-                 name, sector );
-        return NULL;
-    }
-
-    char * const symlink_realname = strdup( link_block.realName );
-
-    return symlink_realname;
-}
