@@ -60,3 +60,31 @@ bool change_dir( struct AdfVolume * const  vol,
     free( dirpath_tmp );
     return true;
 }
+
+
+unsigned filesize2datablocks( const unsigned fsize,
+                              const unsigned blocksize )
+{
+    return ( fsize / blocksize +
+             ( ( fsize % blocksize > 0 ) ? 1 : 0 ) );
+}
+
+
+unsigned datablocks2extblocks( const unsigned data_blocks )
+{
+    //return max ( ( data_blocks - 1 ) / ADF_MAX_DATABLK, 0 );
+    if ( data_blocks < 1 )
+        return 0;
+    return ( data_blocks - 1 ) / ( ADF_MAX_DATABLK );
+}
+
+
+unsigned filesize2blocks( const unsigned fsize,
+                          const unsigned blocksize )
+{
+    //assert ( fsize >= 0 );
+    //assert ( blocksize >= 0 );
+    unsigned data_blocks = filesize2datablocks( fsize, blocksize );
+    unsigned ext_blocks  = datablocks2extblocks( data_blocks );
+    return data_blocks + ext_blocks + 1;   // +1 is the file header block
+}

@@ -29,4 +29,14 @@
 
 bool change_dir( struct AdfVolume * const  vol,
                  const char * const        dir_path );
+
+
+unsigned filesize2datablocks( const unsigned fsize,
+                              const unsigned blocksize );
+
+unsigned datablocks2extblocks( const unsigned data_blocks );
+
+unsigned filesize2blocks( const unsigned fsize,
+                          const unsigned blocksize );
+
 #endif
