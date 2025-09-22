@@ -45,30 +45,28 @@ typedef struct CmdlineOptions {
     unsigned         volidx;
     struct AdfVector paths;
     bool             longFormat,
+                     sizeInBlocks,
                      verbose,
                      help,
                      version;
 } CmdlineOptions;
 
+CmdlineOptions options;
 
 bool parse_args( const int * const     argc,
                  char * const * const  argv,
                  CmdlineOptions *      options );
 
 bool show_paths( struct AdfVolume * const       vol,
-                 const struct AdfVector * const paths,
-                 const bool                     longFormat );
+                 const struct AdfVector * const paths );
 
 bool show_path( struct AdfVolume * const  vol,
-                const char * const        path,
-                const bool                longFormat );
+                const char * const        path );
 
-bool show_current_dir( struct AdfVolume * const  vol,
-                       const bool                longFormat );
+bool show_current_dir( struct AdfVolume * const  vol );
 
 void show_entry( struct AdfVolume * const      vol,
-                 const struct AdfEntry * const entry,
-                 const bool                    longFormat );
+                 const struct AdfEntry * const entry );
 
 void adfAccess2String( const int32_t  acc,
                        char           accStr[ 8 + 1 ] );
@@ -78,6 +76,7 @@ void usage(void)
     printf( "\nUsage:  adfls  [-p volume] adf_device [path]...\n\n"
             "List contents of directories of an ADF/HDF volume.\n\n"
             "Options:\n"
+            "  -b         show size in blocks (total number of blocks used)\n"
             "  -p volume  volume/partition index, counting from 0, default: 0\n"
             "  -l         use long listing format\n"
             "  -v         be more verbose\n\n"
@@ -89,7 +88,6 @@ void usage(void)
 int main( const int     argc,
           char * const argv[] )
 {
-    CmdlineOptions options;
     if ( ! parse_args( &argc, argv, &options ) ) {
         fprintf( stderr, "Usage info:  adfsalvage -h\n" );
         exit( EXIT_FAILURE );
@@ -145,7 +143,7 @@ int main( const int     argc,
         goto clean_up_dev_unmount;
     }
 
-    if ( ! show_paths( vol, &options.paths, options.longFormat ) )
+    if ( ! show_paths( vol, &options.paths ) )
         status = ENOENT;
     
 //clean_up_volume:
@@ -182,11 +180,15 @@ bool parse_args( const int * const     argc,
         options->version = false;
     options->paths   = adfVectorCreate( 0, sizeof(char *) );
 
-    const char * valid_options = "lp:hvV";
+    const char * valid_options = "blp:hvV";
     int opt;
     while ( ( opt = getopt( *argc, (char * const *) argv, valid_options ) ) != -1 ) {
 //        printf ( "optind %d, opt %c, optarg %s\n", optind, ( char ) opt, optarg );
         switch ( opt ) {
+        case 'b':
+            options->sizeInBlocks = true;
+            break;
+
         case 'l':
             options->longFormat = true;
             break;
@@ -256,13 +258,11 @@ bool parse_args( const int * const     argc,
 
 // returns true on success
 bool show_paths( struct AdfVolume * const       vol,
-                 const struct AdfVector * const paths,
-                 const bool                     longFormat )
+                 const struct AdfVector * const paths )
 {
-
     if ( paths->nItems < 1 ) {
         //printf (" CASE 1\n");
-        return show_path( vol, "", longFormat );
+        return show_path( vol, "" );
     }
 
     bool status = true;
@@ -273,7 +273,7 @@ bool show_paths( struct AdfVolume * const       vol,
         const char * const path = ( &( (char **) paths->items )[0] )[ i ];
         if ( paths->nItems > 1 )
             printf("\n%s:\n", path );
-        if ( ! show_path( vol, path, longFormat ) )
+        if ( ! show_path( vol, path ) )
             status = false;
     }
 
@@ -282,8 +282,7 @@ bool show_paths( struct AdfVolume * const       vol,
 
 
 bool show_path( struct AdfVolume * const  vol,
-                const char * const        path,
-                const bool                longFormat )
+                const char * const        path )
 {
     //printf("%s: path '%s'\n", __func__, path );
     const char * path_relative = path;
@@ -293,7 +292,7 @@ bool show_path( struct AdfVolume * const  vol,
         path_relative++;
 
     if ( *path_relative == '\0' ) {
-        return show_current_dir( vol, longFormat );
+        return show_current_dir( vol );
     }
 
     // not in the root directory so must chdir to the proper one
@@ -342,14 +341,14 @@ bool show_path( struct AdfVolume * const  vol,
                 goto cleanup;
             }
             
-            show_current_dir( vol, longFormat );
+            show_current_dir( vol );
         }
         else
-            show_entry( vol, entry, longFormat );
+            show_entry( vol, entry );
 
         adfFreeEntry( entry );
     } else {
-        show_current_dir( vol, longFormat );
+        show_current_dir( vol );
     }
 
 cleanup:
@@ -360,13 +359,12 @@ cleanup:
 }
 
 
-bool show_current_dir( struct AdfVolume * const  vol,
-                       const bool                longFormat )
+bool show_current_dir( struct AdfVolume * const  vol )
 {
     struct AdfList * const list = adfGetDirEnt( vol, vol->curDirPtr );
 
     for ( struct AdfList * node = list; node; node = node->next ) {
-        show_entry( vol, node->content, longFormat );
+        show_entry( vol, node->content );
     }
 
     adfFreeDirList( list );
@@ -375,10 +373,9 @@ bool show_current_dir( struct AdfVolume * const  vol,
 }
 
 void show_entry( struct AdfVolume * const      vol,
-                 const struct AdfEntry * const entry,
-                 const bool                    longFormat )
+                 const struct AdfEntry * const entry )
 {
-    if ( longFormat ) {
+    if ( options.longFormat ) {
         const char * const type = ( entry->type == ADF_ST_DIR   ? "D " :
                                     entry->type == ADF_ST_FILE  ? "F " :
                                     entry->type == ADF_ST_LFILE ? "LF" :
@@ -403,6 +400,10 @@ void show_entry( struct AdfVolume * const      vol,
         if ( entry->type == ADF_ST_FILE ) {
             size = ( (struct AdfFileHeaderBlock *) &entry_block )->byteSize;
         }
+
+        if ( options.sizeInBlocks )
+            size = ( entry->type == ADF_ST_FILE ?
+                     filesize2blocks( size, ADF_LOGICAL_BLOCK_SIZE ) : 1 );
 
         char accessStr[ 8 + 1 ] = "        ";
         if ( entry->type == ADF_ST_FILE ||
