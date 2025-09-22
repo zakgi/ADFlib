@@ -1,3 +1,12 @@
+22SEP2025
+ADFlib 0.10.5
+- fixed opening small (smaller than floppies) HDF files.
+- added a new function for getting entry using sector number.
+- adfinfo: allow inspecting entries deeper in the directory tree,
+  added showing info about links.
+- adfls: a new utility for showing volume contents.
+- some internal improvements (ie. refactoring, more tests).
+
 03SEP2025
 ADFlib 0.10.4
 - unadf on Windows: fix extracting binary files with -p (pipe), #96
