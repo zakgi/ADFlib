@@ -71,6 +71,8 @@ void show_entry( struct AdfVolume * const      vol,
                  const struct AdfEntry * const entry,
                  const bool                    fullInfo );
 
+void adfAccess2String( const int32_t  acc,
+                       char           accStr[ 8 + 1 ] );
 
 void usage(void)
 {
@@ -393,17 +395,26 @@ void show_entry( struct AdfVolume * const      vol,
             size = ( (struct AdfFileHeaderBlock *) &entry_block )->byteSize;
         }
 
+        char accessStr[ 8 + 1 ] = "        ";
+        if ( entry->type == ADF_ST_FILE ||
+             entry->type == ADF_ST_DIR )
+        {
+            adfAccess2String( entry->access, accessStr );
+        }
+
         if ( entry->type == ADF_ST_LSOFT ) {
-            printf( "%s %10u  %4d/%02d/%02d %2d:%02d:%02d  %s -> %s\n",
-                    type, size,
+            printf( "%s %11u  %4d/%02d/%02d %2d:%02d:%02d  %s %s -> %s\n",
+                    accessStr, size,
                     entry->year, entry->month, entry->days,
-                    entry->hour, entry->mins, entry->secs, entry->name,
+                    entry->hour, entry->mins, entry->secs,
+                    type, entry->name,
                     ( (struct AdfLinkBlock *) &entry_block )->realName );
         } else {
-            printf( "%s %10u  %4d/%02d/%02d %2d:%02d:%02d  %s\n",
-                    type, size,
+            printf( "%s %11u  %4d/%02d/%02d %2d:%02d:%02d  %s %s\n",
+                    accessStr, size,
                     entry->year, entry->month, entry->days,
-                    entry->hour, entry->mins, entry->secs, entry->name );
+                    entry->hour, entry->mins, entry->secs,
+                    type, entry->name );
         }
     } else {
         printf( "%s\n", entry->name );
@@ -418,3 +429,17 @@ bool show_file( struct AdfVolume * const  vol,
                 const char * const        file_name );
 
 */
+
+void adfAccess2String( const int32_t  acc,
+                       char           accStr[ 8 + 1 ] )
+{
+    strcpy( accStr, "----rwed" );
+    if ( adfAccHasD( acc ) )  accStr[ 7 ] = '-';
+    if ( adfAccHasE( acc ) )  accStr[ 6 ] = '-';
+    if ( adfAccHasW( acc ) )  accStr[ 5 ] = '-';
+    if ( adfAccHasR( acc ) )  accStr[ 4 ] = '-';
+    if ( adfAccHasA( acc ) )  accStr[ 3 ] = 'a';
+    if ( adfAccHasP( acc ) )  accStr[ 2 ] = 'p';
+    if ( adfAccHasS( acc ) )  accStr[ 1 ] = 's';
+    if ( adfAccHasH( acc ) )  accStr[ 0 ] = 'h';
+}
