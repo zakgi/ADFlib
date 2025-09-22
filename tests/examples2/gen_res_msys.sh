@@ -11,17 +11,22 @@ main() {
 
     for testResDir in res/*
     do
-	echo $testResDir
+	echo "Entering $testResDir/"
         local curDir=$(pwd)
         cd $testResDir
-        rm -fv *_msys
+#        rm -fv *_msys
+#        for testCmd in `ls | grep -v _msys`
         for testCmd in *
         do
-            echo $testCmd
-            #if [[ "$testCmd" =~ "*_msys" ]] ; then continue ; fi
+            if [[ "$testCmd" =~ "_msys" ]] ; then continue ; fi
             local testCmdMsys=${testCmd}${resultsOsPostfix}
-            echo $testCmd $testCmdMsys
-            unix2dos -v <"${testCmd}" >"${testCmdMsys}"
+            if [ ! -f "${testCmdMsys}" ]
+            then
+		echo "Converting ${testCmd} to ${testCmdMsys}..."
+		#unix2dos -v <"${testCmd}" >"${testCmdMsys}"
+		# this is better for this case - it skips binary files
+                unix2dos -v -n "${testCmd}" "${testCmdMsys}"
+            fi
 	done
 	cd $curDir
     done
