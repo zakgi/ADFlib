@@ -1,5 +1,5 @@
 cmd(){
-    ${adfls} "$dumpFile" -p 0 -l dir1/dir1_1/sl2testfile1samedir
+    ${adfls} -p 0 -l "$dumpFile" dir1/dir1_1/sl2testfile1samedir
 }
 
 comment(){

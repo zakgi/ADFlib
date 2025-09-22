@@ -1,5 +1,5 @@
 cmd(){
-    ${adfls} "$dumpFile" -p 0 -l hardlinks_file/hl2testfile1
+    ${adfls} -p 0 -l "$dumpFile" hardlinks_file/hl2testfile1
 }
 
 comment(){

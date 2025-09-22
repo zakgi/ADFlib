@@ -11,6 +11,7 @@ dist_check_SCRIPTS = \
 	test_adfinfo.sh \
 	test_adfinfo_hd.sh \
 	test_adf_floppy.sh \
+	test_adfls.sh \
 	test_adfsalvage.sh \
 	test_unadf.sh \
 	test_unadf_hdd.sh \
