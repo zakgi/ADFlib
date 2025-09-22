@@ -1,0 +1,7 @@
+cmd(){
+    ${adfls} "$dumpFile" -p 0 -l
+}
+
+comment(){
+    echo "List main directory (long)"
+}

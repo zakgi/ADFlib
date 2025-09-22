@@ -1,0 +1,7 @@
+cmd(){
+    ${adfls} "$dumpFile" -p 0 -l hardlinks_file/hl2testfile1
+}
+
+comment(){
+    echo "List hard-link to a file"
+}

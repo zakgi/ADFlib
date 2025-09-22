@@ -38,6 +38,13 @@ dist_check_DATA += \
 	cmd/adfinfo_links/adfinfo_slink_dir \
 	cmd/adfinfo_links/adfinfo_slink_file \
 	cmd/adfinfo_links/adfinfo_slink_file_same_dir \
+	cmd/adfls/adfls_dir1_1_long \
+	cmd/adfls/adfls_file_long \
+	cmd/adfls/adfls_hardlink_dir \
+	cmd/adfls/adfls_hardlink_file \
+	cmd/adfls/adfls_main_dir \
+	cmd/adfls/adfls_main_dir_long \
+	cmd/adfls/adfls_softlink \
 	cmd/adfsalvage/01_show_deleted_entries \
 	cmd/adfsalvage/02_show_bitmap \
 	cmd/adfsalvage/03_rebuild_bitmap \
