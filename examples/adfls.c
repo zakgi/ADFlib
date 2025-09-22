@@ -23,6 +23,7 @@
 #include "pathutils.h"
 
 #include <adflib.h>
+#include <adf_dev_driver_nativ.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
@@ -112,6 +113,7 @@ int main( const int     argc,
     int status = 0;
 
     adfLibInit();
+    adfAddDeviceDriver( &adfDeviceDriverNative );
     adfEnvSetProperty( ADF_PR_USEDIRC, true );
  
     struct AdfDevice * const dev = adfDevOpen( options.adfDevName,
