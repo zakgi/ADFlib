@@ -150,7 +150,7 @@ static struct AdfDevice * adfLinuxInitDevice( const char * const   name,
     // Set device class and type
     //
     dev->type  = adfDevGetTypeByGeometry( &dev->geometry );
-    dev->class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
+    dev->dev_class = ( dev->type != ADF_DEVTYPE_UNKNOWN ) ?
         adfDevTypeGetClass( dev->type ) :
         adfDevGetClassBySizeBlocks( dev->sizeBlocks );
 
